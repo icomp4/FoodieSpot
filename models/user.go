@@ -24,3 +24,11 @@ type Location struct {
 	Latitude    float64
 	Longitude   float64
 }
+
+type Post struct {
+	gorm.Model
+	AuthorID uint // This field will store the ID of the author user
+	Author   User `gorm:"foreignKey:AuthorID"` // This field represents the author user
+	Location *Location
+	Likes    int
+}

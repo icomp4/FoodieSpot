@@ -15,6 +15,7 @@ func main() {
 	app := fiber.New()
 
 	app.Post("/foodSharing/v1/users/signup", handlers.HandleSignUp)
+	app.Post("/foodSharing/v1/users/login", handlers.HandleLogin)
 
 	listen := app.Listen(":8080")
 	if listen != nil {
