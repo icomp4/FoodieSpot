@@ -4,6 +4,7 @@ import (
 	"foodSharer/controllers"
 	"foodSharer/messages"
 	"foodSharer/models"
+	"foodSharer/session"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -62,7 +63,23 @@ func HandleLogin(c *fiber.Ctx) error {
 		return c.SendStatus(400)
 	}
 
-	// If no error is returned, login has been successful
+	// getting the current session store
+	sess, err := session.Store.Get(c)
+	if err != nil {
+		panic(err)
+	}
+
+	// attempts to set the session's USERID, USERNAME, and AUTHORIZED
+	sessionFailed := session.SetSession(sess, attemptLogin)
+	if sessionFailed != nil {
+		message := messages.ErrorMessage{
+			Status:  "Login Failed",
+			Message: "Failed to save session",
+		}
+		c.JSON(message)
+		return c.SendStatus(400)
+	}
+	// User successfully logged in, return user and status
 	message := messages.SuccessMessage{
 		Status:  "Login successful",
 		Message: "User " + attemptLogin.Username + " has successfully logged in !",
@@ -70,5 +87,30 @@ func HandleLogin(c *fiber.Ctx) error {
 	}
 	c.JSON(message)
 	return c.SendStatus(200)
+}
+func HandleLogout(c *fiber.Ctx) error {
+	// Getting current session info
+	sess, err := session.Store.Get(c)
+	if err != nil {
+		message := messages.ErrorMessage{
+			Status:  "Logout Failed",
+			Message: "Failed to get sesssion",
+		}
+		c.JSON(message)
+		return c.SendStatus(400)
+	}
+	// Storing the current user's name
+	username := sess.Get("Username").(string)
 
+	// Deleting the cookie, (logging out)
+	destroy := sess.Destroy()
+	if err != nil {
+		panic(destroy)
+	}
+	message := messages.SuccessMessage{
+		Status:  "Logout Successful",
+		Message: "User " + username + " has successfully logged out",
+	}
+	c.JSON(message)
+	return c.SendStatus(400)
 }
