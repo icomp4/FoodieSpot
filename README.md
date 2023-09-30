@@ -4,9 +4,9 @@ Welcome to the FoodieSpot project! This project is a Go-based backend for a web 
 
 __What's Coming Next?__
 
-2. Posting food spots, see \models\user.go to see the structure
-3. Following other users
-4. Liking and commenting on other people's posts
+1. Posting food spots, see \models\user.go to see the structure
+2. Following other users
+3. Liking and commenting on other people's posts
 
 __What's The End Goal?__
 1. Create a fully featured platform for foodies to share their favorite spots and find new places to try !
