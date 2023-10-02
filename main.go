@@ -4,6 +4,8 @@ import (
 	"foodSharer/database"
 	"foodSharer/handlers"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"log"
 )
 
@@ -13,6 +15,8 @@ func main() {
 		log.Println(err)
 	}
 	app := fiber.New()
+	app.Use(limiter.New())
+	app.Use(logger.New())
 
 	app.Post("/foodSharing/v1/users/signup", handlers.HandleSignUp)
 	app.Post("/foodSharing/v1/users/login", handlers.HandleLogin)

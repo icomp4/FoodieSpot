@@ -11,6 +11,7 @@ type User struct {
 	FavoriteLocations []*Location `gorm:"many2many:user_favorite_locations;"`
 	FollowerCount     int
 	FollowingCount    int
+	Posts             []Post `gorm:"foreignKey:AuthorID"` // This field represents the posts authored by the user
 }
 
 type Location struct {
@@ -27,8 +28,9 @@ type Location struct {
 
 type Post struct {
 	gorm.Model
-	AuthorID uint // This field will store the ID of the author user
-	Author   User `gorm:"foreignKey:AuthorID"` // This field represents the author user
-	Location *Location
-	Likes    int
+	AuthorID   uint      // This field will store the ID of the author user
+	Author     User      `gorm:"foreignKey:AuthorID"` // This field represents the author user
+	LocationID uint      // This field will store the ID of the location
+	Location   *Location `gorm:"foreignKey:LocationID"` // This field represents the location
+	Likes      int
 }

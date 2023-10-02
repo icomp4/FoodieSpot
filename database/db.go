@@ -29,7 +29,7 @@ func StartDB() error {
 	DB = db
 
 	// Migrating tables to ensure database is up-to-date
-	migrate := DB.AutoMigrate(&models.User{}, &models.Location{})
+	migrate := DB.AutoMigrate(&models.User{}, &models.Location{}, &models.Post{})
 	if migrate != nil {
 		log.Println(migrate)
 	}
