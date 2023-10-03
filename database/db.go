@@ -2,7 +2,6 @@ package database
 
 import (
 	"foodSharer/models"
-	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
@@ -13,10 +12,6 @@ var DB *gorm.DB
 
 func StartDB() error {
 	// Loading env vars
-	err := godotenv.Load()
-	if err != nil {
-		return err
-	}
 	// Secret DB url
 	dbURL := os.Getenv("DB_URL")
 	dsn := dbURL
