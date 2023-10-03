@@ -14,13 +14,13 @@ import (
 
 // Response Format for Geolocation api call
 type Response struct {
-	Status         string `json:"status"`
-	Ip             string `json:"query"`
-	Country        string `json:"country"`
-	CountryCode    string `json:"countryCode"`
-	Continent_code string `json:"continent_Code"`
-	City           string `json:"city"`
-	State          string `json:"regionName"`
+	Status      string `json:"status"`
+	Country     string `json:"country"`
+	CountryCode string `json:"countryCode"`
+	City        string `json:"city"`
+	State       string `json:"regionName"`
+	Zip         string `json:"zip"`
+	Region      string `json:"region"`
 }
 
 func SignUp(user *models.User) error {
