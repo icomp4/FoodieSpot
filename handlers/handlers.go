@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"foodSharer/controllers"
 	"foodSharer/messages"
 	"foodSharer/models"
@@ -94,7 +95,7 @@ func HandleLogout(c *fiber.Ctx) error {
 	if err != nil {
 		message := messages.ErrorMessage{
 			Status:  "Logout Failed",
-			Message: "Failed to get sesssion",
+			Message: "Session Invalid",
 		}
 		c.JSON(message)
 		return c.SendStatus(400)
@@ -113,4 +114,50 @@ func HandleLogout(c *fiber.Ctx) error {
 	}
 	c.JSON(message)
 	return c.SendStatus(400)
+}
+func HandleGetLocation(c *fiber.Ctx) error {
+
+	// Attempting to get current session information
+	sess, err := session.Store.Get(c)
+	if err != nil {
+		message := messages.ErrorMessage{
+			Status:  "Failed to get ip",
+			Message: "Session Invalid",
+		}
+		c.JSON(message)
+		return c.SendStatus(400)
+	}
+
+	//Checking if the current user is authorized (logged in)
+	if sess.Get("Authorized") == false {
+		message := messages.ErrorMessage{
+			Status:  "Failed to get ip",
+			Message: "User not authorized",
+		}
+		c.JSON(message)
+		return c.SendStatus(400)
+	}
+
+	// Retrieving the ip address, and passing it to GetLocation func
+	ip := c.IP()
+	fmt.Println(ip)
+	response, err := controllers.GetLocation(ip)
+	if err != nil || response.Success == false {
+		message := messages.ErrorMessage{
+			Status:  "Failed to get ip",
+			Message: "Invalid address",
+		}
+		c.JSON(message)
+		return c.SendStatus(400)
+	}
+
+	// Formatting the proper response for a successful request
+	message := messages.LocationMessage{
+		Status:   "Success",
+		Message:  "Successfully retrieved geodata",
+		Location: response,
+	}
+	c.JSON(message)
+	return c.SendStatus(200)
+
 }

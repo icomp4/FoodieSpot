@@ -21,6 +21,7 @@ func main() {
 	app.Post("/foodSharing/v1/users/signup", handlers.HandleSignUp)
 	app.Post("/foodSharing/v1/users/login", handlers.HandleLogin)
 	app.Post("/foodSharing/v1/users/logout", handlers.HandleLogout)
+	app.Get("/foodSharing/v1/users/location", handlers.HandleGetLocation)
 
 	listen := app.Listen(":8080")
 	if listen != nil {
