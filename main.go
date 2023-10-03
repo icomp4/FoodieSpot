@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"log"
+	"os"
 )
 
 func main() {
@@ -23,7 +24,8 @@ func main() {
 	app.Post("/foodSharing/v1/users/logout", handlers.HandleLogout)
 	app.Get("/foodSharing/v1/users/location", handlers.HandleGetLocation)
 
-	listen := app.Listen(":0000")
+	port := os.Getenv("PORT")
+	listen := app.Listen(":0000" + port)
 	if listen != nil {
 		log.Println(listen)
 	}
