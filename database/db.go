@@ -11,6 +11,7 @@ import (
 var DB *gorm.DB
 
 func StartDB() error {
+	// Loading env vars
 	// Secret DB url
 	dbURL := os.Getenv("DB_URL")
 	dsn := dbURL

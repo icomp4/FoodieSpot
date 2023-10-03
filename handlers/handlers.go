@@ -139,7 +139,7 @@ func HandleGetLocation(c *fiber.Ctx) error {
 	}
 
 	// Retrieving the ip address, and passing it to GetLocation func
-	ip := c.IP()
+	ip := c.Get("X-Forwarded-For")
 	fmt.Println(ip)
 	response, err := controllers.GetLocation(ip)
 	if err != nil || response.Status != "success" {
