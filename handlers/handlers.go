@@ -142,7 +142,7 @@ func HandleGetLocation(c *fiber.Ctx) error {
 	ip := c.IP()
 	fmt.Println(ip)
 	response, err := controllers.GetLocation(ip)
-	if err != nil || response.Success == false {
+	if err != nil || response.Status != "success" {
 		message := messages.ErrorMessage{
 			Status:  "Failed to get ip",
 			Message: "Invalid address",
