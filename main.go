@@ -25,7 +25,7 @@ func main() {
 	app.Get("/foodSharing/v1/users/location", handlers.HandleGetLocation)
 
 	port := os.Getenv("PORT")
-	listen := app.Listen(":0000" + port)
+	listen := app.Listen("0.0.0.0:" + port)
 	if listen != nil {
 		log.Println(listen)
 	}
