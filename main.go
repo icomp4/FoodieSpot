@@ -23,7 +23,7 @@ func main() {
 	app.Post("/foodSharing/v1/users/logout", handlers.HandleLogout)
 	app.Get("/foodSharing/v1/users/location", handlers.HandleGetLocation)
 
-	listen := app.Listen(":8080")
+	listen := app.Listen(":0000")
 	if listen != nil {
 		log.Println(listen)
 	}
