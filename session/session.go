@@ -7,6 +7,7 @@ I.E. If you need a user's ID for a function, can retrieve it via the session
 package session
 
 import (
+	"fmt"
 	"foodSharer/models"
 	"github.com/gofiber/fiber/v2/middleware/session"
 )
@@ -19,7 +20,8 @@ func init() {
 }
 
 func SetSession(sess *session.Session, user *models.User) error {
-	sess.Set("UserID", user.ID)
+	userIDStr := fmt.Sprintf("%d", user.ID)
+	sess.Set("UserID", userIDStr)
 	sess.Set("Username", user.Username)
 	sess.Set("Authorized", true)
 	if err := sess.Save(); err != nil {

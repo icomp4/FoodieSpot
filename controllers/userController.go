@@ -2,10 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"foodSharer/database"
 	"foodSharer/models"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 	"io"
 	"log"
 	"net/http"
@@ -58,7 +60,6 @@ func Login(username string, password string) (*models.User, error) {
 	}
 	return user, nil
 }
-
 func GetLocation(ip string) (Response, error) {
 
 	url := "http://ip-api.com/json/" + ip
@@ -75,4 +76,23 @@ func GetLocation(ip string) (Response, error) {
 		return Response{}, err
 	}
 	return response, nil
+}
+func DeleteAccount(userID string) error {
+	var userToDelete models.User
+
+	// Create a map with "id" as the key and userID as the value
+	where := map[string]interface{}{"id": userID}
+
+	// Use the map in the Where clause to find the user
+	if err := database.DB.Where(where).First(&userToDelete).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return fmt.Errorf("user with ID %s not found", userID)
+		}
+		return err
+	}
+
+	if delAcc := database.DB.Delete(&userToDelete).Error; delAcc != nil {
+		return delAcc
+	}
+	return nil
 }

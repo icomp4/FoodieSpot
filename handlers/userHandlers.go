@@ -115,6 +115,56 @@ func HandleLogout(c *fiber.Ctx) error {
 	c.JSON(message)
 	return c.SendStatus(400)
 }
+func HandleDeleteAccount(c *fiber.Ctx) error {
+	// Getting current session info
+	sess, err := session.Store.Get(c)
+	if err != nil {
+		message := messages.ErrorMessage{
+			Status:  "Account deletion failed",
+			Message: "Session Invalid",
+		}
+		c.JSON(message)
+		return c.SendStatus(400)
+	}
+	if auth := sess.Get("Authorized"); auth == false {
+		message := messages.ErrorMessage{
+			Status:  "Account deletion failed",
+			Message: "User not authorized",
+		}
+		c.JSON(message)
+		return c.SendStatus(400)
+	}
+	// Retrieving current user's ID
+	userSessID := sess.Get("UserID")
+
+	userID := c.Params("id")
+	fmt.Println("userID:", userSessID)
+	fmt.Println("Passed ID:", userID)
+	if userSessID != userID {
+		message := messages.ErrorMessage{
+			Status:  "Account deletion failed",
+			Message: "User does not own that account !",
+		}
+		c.JSON(message)
+		return c.SendStatus(400)
+	}
+	userName := sess.Get("Username").(string)
+	if deleteUser := controllers.DeleteAccount(userID); deleteUser != nil {
+		message := messages.ErrorMessage{
+			Status:  "Account deletion failed",
+			Message: "Invalid user",
+		}
+		c.JSON(message)
+		return c.SendStatus(400)
+	}
+	message := messages.SuccessMessage{
+		Status:  "Account deletion success",
+		Message: "User " + userName + " has deleted their account",
+	}
+	c.JSON(message)
+	return c.SendStatus(200)
+
+}
 func HandleGetLocation(c *fiber.Ctx) error {
 
 	// Attempting to get current session information

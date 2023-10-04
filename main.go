@@ -7,7 +7,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"log"
-	"os"
 )
 
 func main() {
@@ -23,9 +22,10 @@ func main() {
 	app.Post("/foodSharing/v1/users/login", handlers.HandleLogin)
 	app.Post("/foodSharing/v1/users/logout", handlers.HandleLogout)
 	app.Get("/foodSharing/v1/users/location", handlers.HandleGetLocation)
+	app.Delete("/foodSharing/v1/users/delete/:id", handlers.HandleDeleteAccount)
 
-	port := os.Getenv("PORT")
-	listen := app.Listen("0.0.0.0:" + port)
+	//port := os.Getenv("PORT")
+	listen := app.Listen(":8080")
 	if listen != nil {
 		log.Println(listen)
 	}
