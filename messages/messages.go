@@ -20,3 +20,8 @@ type LocationMessage struct {
 	Message  string
 	Location controllers.Response
 }
+type AllUsersMessage struct {
+	Status  string
+	Message string
+	Users   []*models.User
+}

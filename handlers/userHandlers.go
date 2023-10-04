@@ -126,6 +126,8 @@ func HandleDeleteAccount(c *fiber.Ctx) error {
 		c.JSON(message)
 		return c.SendStatus(400)
 	}
+
+	// checking auth
 	if auth := sess.Get("Authorized"); auth == false {
 		message := messages.ErrorMessage{
 			Status:  "Account deletion failed",
@@ -137,9 +139,10 @@ func HandleDeleteAccount(c *fiber.Ctx) error {
 	// Retrieving current user's ID
 	userSessID := sess.Get("UserID")
 
+	// id passed in param
 	userID := c.Params("id")
-	fmt.Println("userID:", userSessID)
-	fmt.Println("Passed ID:", userID)
+
+	// if the passed id doesn't match the session stored id (user trying to delete someone else's account)
 	if userSessID != userID {
 		message := messages.ErrorMessage{
 			Status:  "Account deletion failed",
@@ -210,4 +213,42 @@ func HandleGetLocation(c *fiber.Ctx) error {
 	c.JSON(message)
 	return c.SendStatus(200)
 
+}
+func HandleGetAllUsers(c *fiber.Ctx) error {
+	// Getting current session info
+	sess, err := session.Store.Get(c)
+	if err != nil {
+		message := messages.ErrorMessage{
+			Status:  "Failed to retrieve users",
+			Message: "Session Invalid",
+		}
+		c.JSON(message)
+		return c.SendStatus(400)
+	}
+
+	// checking auth
+	if auth := sess.Get("Authorized"); auth == false {
+		message := messages.ErrorMessage{
+			Status:  "Failed to retrieve users",
+			Message: "User not authorized",
+		}
+		c.JSON(message)
+		return c.SendStatus(400)
+	}
+	getAllUsers, err := controllers.GetAllUsers()
+	if err != nil {
+		message := messages.ErrorMessage{
+			Status:  "Failed to retrieve users",
+			Message: "Method encountered an error",
+		}
+		c.JSON(message)
+		return c.SendStatus(400)
+	}
+	success := messages.AllUsersMessage{
+		Status:  "Success",
+		Message: "Successfully retrieved users",
+		Users:   getAllUsers,
+	}
+	c.JSON(success)
+	return c.SendStatus(200)
 }

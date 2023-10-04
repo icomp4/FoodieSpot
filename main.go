@@ -22,6 +22,7 @@ func main() {
 	app.Post("/foodSharing/v1/users/login", handlers.HandleLogin)
 	app.Post("/foodSharing/v1/users/logout", handlers.HandleLogout)
 	app.Get("/foodSharing/v1/users/location", handlers.HandleGetLocation)
+	app.Get("/foodSharing/v1/users/all", handlers.HandleGetAllUsers)
 	app.Delete("/foodSharing/v1/users/delete/:id", handlers.HandleDeleteAccount)
 
 	//port := os.Getenv("PORT")

@@ -96,3 +96,10 @@ func DeleteAccount(userID string) error {
 	}
 	return nil
 }
+func GetAllUsers() ([]*models.User, error) {
+	var users []*models.User
+	if findAllUsers := database.DB.Find(&users).Error; findAllUsers != nil {
+		return []*models.User{}, findAllUsers
+	}
+	return users, nil
+}
