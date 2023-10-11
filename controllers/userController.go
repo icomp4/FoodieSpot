@@ -103,3 +103,10 @@ func GetAllUsers() ([]*models.User, error) {
 	}
 	return users, nil
 }
+func GetCurrentUser(userID string) (*models.User, error) {
+	var user *models.User
+	if findAllUsers := database.DB.First(&user,userID).Error; findAllUsers != nil {
+		return nil, findAllUsers
+	}
+	return user, nil
+}

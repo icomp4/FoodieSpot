@@ -5,10 +5,18 @@ import (
 	"foodSharer/controllers"
 	"foodSharer/messages"
 	"foodSharer/models"
-	"foodSharer/session"
+	"strconv"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
+var Store *session.Store
+
+func init() {
+	store := session.New(session.Config{})
+	Store = store
+}
 func HandleSignUp(c *fiber.Ctx) error {
 	var user *models.User
 
@@ -64,34 +72,32 @@ func HandleLogin(c *fiber.Ctx) error {
 		return c.SendStatus(400)
 	}
 
-	// getting the current session store
-	sess, err := session.Store.Get(c)
+	// Getting the current session store
+	sess, err := Store.Get(c)
 	if err != nil {
 		panic(err)
 	}
 
-	// attempts to set the session's USERID, USERNAME, and AUTHORIZED
-	sessionFailed := session.SetSession(sess, attemptLogin)
-	if sessionFailed != nil {
-		message := messages.ErrorMessage{
-			Status:  "Login Failed",
-			Message: "Failed to save session",
-		}
-		c.JSON(message)
-		return c.SendStatus(400)
-	}
 	// User successfully logged in, return user and status
 	message := messages.SuccessMessage{
 		Status:  "Login successful",
 		Message: "User " + attemptLogin.Username + " has successfully logged in !",
 		User:    attemptLogin,
 	}
+	// Attempts to set the session's USERID, USERNAME, and AUTHORIZED
+	idAsString := strconv.Itoa(int(attemptLogin.ID))
+	fmt.Println(idAsString)
+	sess.Set("UserID", idAsString)
+	sess.Set("Username", attemptLogin.Username)
+	sess.Set("Authorized", true)
+	sess.Save()
 	c.JSON(message)
 	return c.SendStatus(200)
 }
+
 func HandleLogout(c *fiber.Ctx) error {
 	// Getting current session info
-	sess, err := session.Store.Get(c)
+	sess, err := Store.Get(c)
 	if err != nil {
 		message := messages.ErrorMessage{
 			Status:  "Logout Failed",
@@ -101,7 +107,8 @@ func HandleLogout(c *fiber.Ctx) error {
 		return c.SendStatus(400)
 	}
 	// Storing the current user's name
-	username := sess.Get("Username").(string)
+	username := sess.Get("Username")
+	fmt.Println(username)
 
 	// Deleting the cookie, (logging out)
 	destroy := sess.Destroy()
@@ -110,14 +117,14 @@ func HandleLogout(c *fiber.Ctx) error {
 	}
 	message := messages.SuccessMessage{
 		Status:  "Logout Successful",
-		Message: "User " + username + " has successfully logged out",
+		Message: "User " + fmt.Sprint(username) + " has successfully logged out",
 	}
 	c.JSON(message)
 	return c.SendStatus(400)
 }
 func HandleDeleteAccount(c *fiber.Ctx) error {
 	// Getting current session info
-	sess, err := session.Store.Get(c)
+	sess, err := Store.Get(c)
 	if err != nil {
 		message := messages.ErrorMessage{
 			Status:  "Account deletion failed",
@@ -171,7 +178,7 @@ func HandleDeleteAccount(c *fiber.Ctx) error {
 func HandleGetLocation(c *fiber.Ctx) error {
 
 	// Attempting to get current session information
-	sess, err := session.Store.Get(c)
+	sess, err := Store.Get(c)
 	if err != nil {
 		message := messages.ErrorMessage{
 			Status:  "Failed to get ip",
@@ -216,7 +223,7 @@ func HandleGetLocation(c *fiber.Ctx) error {
 }
 func HandleGetAllUsers(c *fiber.Ctx) error {
 	// Getting current session info
-	sess, err := session.Store.Get(c)
+	sess, err := Store.Get(c)
 	if err != nil {
 		message := messages.ErrorMessage{
 			Status:  "Failed to retrieve users",
@@ -225,7 +232,7 @@ func HandleGetAllUsers(c *fiber.Ctx) error {
 		c.JSON(message)
 		return c.SendStatus(400)
 	}
-
+	fmt.Println(sess.Keys())
 	// checking auth
 	if auth := sess.Get("Authorized"); auth == false {
 		message := messages.ErrorMessage{
@@ -248,6 +255,52 @@ func HandleGetAllUsers(c *fiber.Ctx) error {
 		Status:  "Success",
 		Message: "Successfully retrieved users",
 		Users:   getAllUsers,
+	}
+	c.JSON(success)
+	return c.SendStatus(200)
+}
+func HandleGetCurrentUser(c *fiber.Ctx) error {
+	// Getting current session info
+	sess, err := Store.Get(c)
+	if err != nil {
+		message := messages.ErrorMessage{
+			Status:  "Failed to retrieve users",
+			Message: "Session Invalid",
+		}
+		c.JSON(message)
+		return c.SendStatus(400)
+	}
+
+	// checking auth
+	if auth := sess.Get("Authorized"); auth == false {
+		message := messages.ErrorMessage{
+			Status:  "Failed to retrieve users",
+			Message: "User not authorized",
+		}
+		c.JSON(message)
+		return c.SendStatus(400)
+	}
+	fmt.Println(sess.Get("UserID"))
+	if sess.Get("UserID") == nil {
+		c.WriteString("userID nill")
+		return c.SendStatus(400)
+	}
+	currentUserID := sess.Get("UserID")
+
+	// getting info on the current user
+	getCurrentUser, err := controllers.GetCurrentUser(fmt.Sprint(currentUserID))
+	if err != nil {
+		message := messages.ErrorMessage{
+			Status:  "Failed to retrieve users",
+			Message: "Method encountered an error",
+		}
+		c.JSON(message)
+		return c.SendStatus(400)
+	}
+	success := messages.SuccessMessage{
+		Status:  "Success",
+		Message: "Successfully retrieved user",
+		User:    getCurrentUser,
 	}
 	c.JSON(success)
 	return c.SendStatus(200)
