@@ -27,6 +27,7 @@ func main() {
 	app.Get("/foodSharing/v1/user", handlers.HandleGetCurrentUser)               // return a list of all users
 	app.Get("/foodSharing/v1/users/all", handlers.HandleGetAllUsers)             // get the current user's details
 	app.Delete("/foodSharing/v1/users/delete/:id", handlers.HandleDeleteAccount) // delete current user
+	app.Post("foodSharing/v1/post/create", handlers.HandleCreatePost)            // Create a new post
 
 	//port := os.Getenv("PORT")
 	listen := app.Listen(":8080")

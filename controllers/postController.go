@@ -5,13 +5,13 @@ import (
 	"foodSharer/models"
 )
 
-func CreatePost(userID string, post models.Post) (models.Post, error) {
+func CreatePost(userID string, post models.Post)  error {
 	var user models.User
 	if err := database.DB.First(&user, userID).Error; err != nil {
-		return models.Post{}, err
+		return err
 	}
-	if create := database.DB.Create(post).Error; create != nil {
-		return models.Post{}, create
+	if create := database.DB.Preload("Location").Create(&post).Error; create != nil {
+		return create
 	}
-	return post, nil
+	return nil
 }
