@@ -24,7 +24,6 @@ type Response struct {
 	Zip         string `json:"zip"`
 	Region      string `json:"region"`
 }
-
 func SignUp(user *models.User) error {
 	// Storing usernames in lowercase, not necessary but looks cleaner
 	user.Username = strings.ToLower(user.Username)
@@ -105,7 +104,7 @@ func GetAllUsers() ([]*models.User, error) {
 }
 func GetCurrentUser(userID string) (*models.User, error) {
 	var user *models.User
-	if findAllUsers := database.DB.First(&user,userID).Error; findAllUsers != nil {
+	if findAllUsers := database.DB.Preload("Posts").First(&user,userID).Error; findAllUsers != nil {
 		return nil, findAllUsers
 	}
 	return user, nil

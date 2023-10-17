@@ -15,3 +15,11 @@ func CreatePost(userID string, post models.Post)  error {
 	}
 	return nil
 }
+
+func RetrievePost(postID string) (models.Post, error){
+	var post models.Post
+	if err := database.DB.Preload("Location").Preload("Author").First(&post,postID).Error; err != nil{
+		return models.Post{},nil
+	}
+	return post,nil
+}

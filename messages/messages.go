@@ -26,14 +26,14 @@ type AllUsersMessage struct {
 	Users   []*models.User
 }
 type SuccessfulPostCreation struct {
-    Status   string `json:"status"`
-    Message  string `json:"message"`
-	Post struct{
+	Status  string `json:"status"`
+	Message string `json:"message"`
+	Post    struct {
 		Author struct {
-			UserID string
+			UserID   string
 			Username string
 		}
-		Location struct{
+		Location struct {
 			Name        string
 			Address     string
 			Rating      float32
@@ -44,6 +44,27 @@ type SuccessfulPostCreation struct {
 			Longitude   float64
 		}
 	}
-    Likes    int    `json:"likes"`
+	Likes int `json:"likes"`
 }
 
+type SuccessPostFetch struct {
+	Status  string `json:"status"`
+	Message string `json:"message"`
+	Post    struct {
+		Author struct {
+			UserID   string
+			Username string
+		}
+		Location struct {
+			Name        string
+			Address     string
+			Rating      float32
+			ImageURL    string
+			Description string
+			Category    string
+			Latitude    float64
+			Longitude   float64
+		}
+	}
+	Likes int `json:"likes"`
+}
